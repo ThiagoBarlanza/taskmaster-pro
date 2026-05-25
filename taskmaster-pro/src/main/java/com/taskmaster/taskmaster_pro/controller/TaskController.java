@@ -6,9 +6,12 @@ import com.taskmaster.taskmaster_pro.PriorityComparator;
 import com.taskmaster.taskmaster_pro.model.Priority;
 import com.taskmaster.taskmaster_pro.model.Task;
 import com.taskmaster.taskmaster_pro.repository.TaskRepository;
+import com.taskmaster.taskmaster_pro.service.CsvImportService;
+import com.taskmaster.taskmaster_pro.service.JsonImportService;
 import com.taskmaster.taskmaster_pro.service.TaskSorter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,10 +25,14 @@ public class TaskController {
 
     private final TaskRepository repository;
     private final TaskSorter taskSorter;
+    private final CsvImportService csvImportService;
+    private final JsonImportService jsonImportService;
 
-    public TaskController(TaskRepository repository, TaskSorter taskSorter) {
+    public TaskController(TaskRepository repository, TaskSorter taskSorter, CsvImportService csvImportService, JsonImportService jsonImportService) {
         this.repository = repository;
         this.taskSorter = taskSorter;
+        this.csvImportService = csvImportService;
+        this.jsonImportService = jsonImportService;
     }
 
     @GetMapping
@@ -77,4 +84,23 @@ public class TaskController {
         return count + " tasks generated successfully.";
     }
 
+    @PostMapping("/import/csv")
+    public String importCsv(@RequestParam("file") MultipartFile file) {
+        try {
+            int count = csvImportService.importCsv(file);
+            return String.format("Imported %d tasks from CSV", count);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to import CSV: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/import/json")
+    public String importJson(@RequestParam("file") MultipartFile file) {
+        try {
+            int count = jsonImportService.importJson(file);
+            return String.format("Imported %d tasks from JSON", count);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to import JSON: " + e.getMessage());
+        }
+    }
 }
