@@ -1,2 +1,2 @@
 # taskmaster-pro
-TaskMaster Pro is a API to manage tasks.
+REST API for task management with sorting, cache and performance optimizations.
