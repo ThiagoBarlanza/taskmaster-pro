@@ -1,13 +1,12 @@
 package com.taskmaster.taskmaster_pro.controller;
 
-
 import com.taskmaster.taskmaster_pro.DeadlineComparator;
 import com.taskmaster.taskmaster_pro.PriorityComparator;
 import com.taskmaster.taskmaster_pro.model.Priority;
 import com.taskmaster.taskmaster_pro.model.Task;
-import com.taskmaster.taskmaster_pro.repository.TaskRepository;
 import com.taskmaster.taskmaster_pro.service.CsvImportService;
 import com.taskmaster.taskmaster_pro.service.JsonImportService;
+import com.taskmaster.taskmaster_pro.service.TaskService;
 import com.taskmaster.taskmaster_pro.service.TaskSorter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -23,13 +23,14 @@ import java.util.Random;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskRepository repository;
+    private final TaskService taskService;
     private final TaskSorter taskSorter;
     private final CsvImportService csvImportService;
     private final JsonImportService jsonImportService;
 
-    public TaskController(TaskRepository repository, TaskSorter taskSorter, CsvImportService csvImportService, JsonImportService jsonImportService) {
-        this.repository = repository;
+    public TaskController(TaskService taskService, TaskSorter taskSorter,
+                          CsvImportService csvImportService, JsonImportService jsonImportService) {
+        this.taskService = taskService;
         this.taskSorter = taskSorter;
         this.csvImportService = csvImportService;
         this.jsonImportService = jsonImportService;
@@ -37,28 +38,26 @@ public class TaskController {
 
     @GetMapping
     public List<Task> listAll() {
-        return repository.findAll();
+        return (List<Task>) taskService.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Task create(@RequestBody Task task) {
-        // Garante que o createdAt é preenchido (caso não venha no JSON)
         if (task.getCreatedAt() == null) {
-            task.setCreatedAt(java.time.LocalDateTime.now());
+            task.setCreatedAt(LocalDateTime.now());
         }
-        return repository.save(task);
+        return taskService.save(task);
     }
 
     @GetMapping("/{id}")
     public Task findById(@PathVariable Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id " + id));
+        return taskService.findById(id);
     }
 
     @GetMapping("/sorted")
     public List<Task> sortedTasks(@RequestParam String criteria) {
-        List<Task> allTasks = repository.findAll();
+        List<Task> allTasks = new ArrayList<>((List<Task>) taskService.findAll());
         Comparator<Task> comparator = switch (criteria.toLowerCase()) {
             case "priority" -> new PriorityComparator();
             case "deadline" -> new DeadlineComparator();
@@ -79,7 +78,7 @@ public class TaskController {
             long days = random.nextInt(396) - 30; // -30 to 365 days
             task.setDeadline(LocalDate.now().plusDays(days));
             task.setCreatedAt(LocalDateTime.now());
-            repository.save(task);
+            taskService.save(task);
         }
         return count + " tasks generated successfully.";
     }
