@@ -102,4 +102,16 @@ public class TaskController {
             throw new RuntimeException("Failed to import JSON: " + e.getMessage());
         }
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidCriteria(IllegalArgumentException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleRuntimeException(RuntimeException ex) {
+        return ex.getMessage();
+    }
 }

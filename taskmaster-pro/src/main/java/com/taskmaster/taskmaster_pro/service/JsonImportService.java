@@ -65,6 +65,6 @@ public class JsonImportService {
                 tasks.add(task);
             }
         }
-        return repository.saveAll(tasks).size();
+        return tasks.isEmpty() ? 0 : repository.saveAll(tasks).size();
     }
 }
