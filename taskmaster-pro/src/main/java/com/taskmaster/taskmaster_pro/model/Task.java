@@ -88,6 +88,15 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    // dentro de Task.java, adicione:
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // getter e setter
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
 
     // (Se usares Lombok: @Data, @NoArgsConstructor, @AllArgsConstructor)
 }

@@ -2,8 +2,12 @@ package com.taskmaster.taskmaster_pro.controller;
 
 import com.taskmaster.taskmaster_pro.DeadlineComparator;
 import com.taskmaster.taskmaster_pro.PriorityComparator;
+import com.taskmaster.taskmaster_pro.dto.TaskDto;
 import com.taskmaster.taskmaster_pro.model.Priority;
 import com.taskmaster.taskmaster_pro.model.Task;
+import com.taskmaster.taskmaster_pro.model.User;
+import com.taskmaster.taskmaster_pro.repository.TaskRepository;
+import com.taskmaster.taskmaster_pro.repository.UserRepository;
 import com.taskmaster.taskmaster_pro.service.CsvImportService;
 import com.taskmaster.taskmaster_pro.service.JsonImportService;
 import com.taskmaster.taskmaster_pro.service.TaskService;
@@ -14,10 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
@@ -27,13 +29,37 @@ public class TaskController {
     private final TaskSorter taskSorter;
     private final CsvImportService csvImportService;
     private final JsonImportService jsonImportService;
+    private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+
+
 
     public TaskController(TaskService taskService, TaskSorter taskSorter,
-                          CsvImportService csvImportService, JsonImportService jsonImportService) {
+                          CsvImportService csvImportService, JsonImportService jsonImportService,
+                          UserRepository userRepository,  TaskRepository taskRepository) {
         this.taskService = taskService;
         this.taskSorter = taskSorter;
         this.csvImportService = csvImportService;
         this.jsonImportService = jsonImportService;
+        this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
+    }
+
+    // Endpoint que mostra a diferença entre INNER JOIN e LEFT JOIN
+    @GetMapping("/join-demo")
+    public List<TaskDto> demonstrateJoins() {
+        List<Task> tasks = taskRepository.findAllTasksWithUserLeftJoin();
+        return tasks.stream()
+                .map(task -> new TaskDto(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getPriority(),
+                        task.getDeadline(),
+                        task.getUser() != null ? task.getUser().getId() : null,
+                        task.getUser() != null ? task.getUser().getName() : null
+                ))
+                .collect(Collectors.toList());
     }
 
     @GetMapping
@@ -113,5 +139,27 @@ public class TaskController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleRuntimeException(RuntimeException ex) {
         return ex.getMessage();
+    }
+
+    @PostMapping("/setup-demo")
+    public String setupDemo() {
+        // Criar users
+        User alice = new User("Alice", "alice@example.com");
+        User bob = new User("Bob", "bob@example.com");
+        userRepository.saveAll(List.of(alice, bob));
+
+        // Criar tarefas (algumas com user, outras sem)
+        Task t1 = new Task("Task 1", "Desc1", Priority.HIGH, LocalDate.now());
+        t1.setUser(alice);
+        taskService.save(t1);
+
+        Task t2 = new Task("Task 2", "Desc2", Priority.MID, LocalDate.now());
+        t2.setUser(bob);
+        taskService.save(t2);
+
+        Task t3 = new Task("Task 3", "No user", Priority.LOW, null);
+        taskService.save(t3);
+
+        return "Demo data created. Users: Alice, Bob. Tasks: 3 (2 with users, 1 without).";
     }
 }
