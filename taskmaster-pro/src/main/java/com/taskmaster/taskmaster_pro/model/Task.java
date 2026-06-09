@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -26,10 +25,10 @@ public class Task {
 
     private LocalDateTime createdAt;
 
-    // Construtor vazio (obrigatório para JPA)
+    // Empty constructor (required by JPA)
     public Task() {}
 
-    // Construtor útil para criação manual
+    // Convenient constructor for manual object creation
     public Task(String title, String description, Priority priority, LocalDate deadline) {
         this.title = title;
         this.description = description;
@@ -38,7 +37,7 @@ public class Task {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters e Setters (todos)
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -88,16 +87,19 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    // dentro de Task.java, adicione:
+    // User relationship
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    // getter e setter
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    // User getter and setter
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    // (Se usares Lombok: @Data, @NoArgsConstructor, @AllArgsConstructor)
+    // If using Lombok: @Data, @NoArgsConstructor, @AllArgsConstructor
 }
-

@@ -8,12 +8,12 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-    public class TaskSorter {
+public class TaskSorter {
 
-        public List<Task> sort(List<Task> tasks, Comparator<Task> comparator) {
-            // Converte para ArrayList para garantir mutabilidade e melhor performance
-            List<Task> mutableList = new ArrayList<>(tasks);
-            mutableList.sort(comparator);
-            return mutableList;
-        }
+    public List<Task> sort(List<Task> tasks, Comparator<Task> comparator) {
+        // Convert to ArrayList to ensure mutability and better performance
+        List<Task> mutableList = new ArrayList<>(tasks);
+        mutableList.sort(comparator);
+        return mutableList;
+    }
 }

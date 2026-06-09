@@ -32,11 +32,9 @@ public class TaskController {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
-
-
     public TaskController(TaskService taskService, TaskSorter taskSorter,
                           CsvImportService csvImportService, JsonImportService jsonImportService,
-                          UserRepository userRepository,  TaskRepository taskRepository) {
+                          UserRepository userRepository, TaskRepository taskRepository) {
         this.taskService = taskService;
         this.taskSorter = taskSorter;
         this.csvImportService = csvImportService;
@@ -45,7 +43,7 @@ public class TaskController {
         this.taskRepository = taskRepository;
     }
 
-    // Endpoint que mostra a diferença entre INNER JOIN e LEFT JOIN
+    // Endpoint that shows the difference between INNER JOIN and LEFT JOIN
     @GetMapping("/join-demo")
     public List<TaskDto> demonstrateJoins() {
         List<Task> tasks = taskRepository.findAllTasksWithUserLeftJoin();
@@ -143,12 +141,12 @@ public class TaskController {
 
     @PostMapping("/setup-demo")
     public String setupDemo() {
-        // Criar users
+        // Create users
         User alice = new User("Alice", "alice@example.com");
         User bob = new User("Bob", "bob@example.com");
         userRepository.saveAll(List.of(alice, bob));
 
-        // Criar tarefas (algumas com user, outras sem)
+        // Create tasks (some with users, others without)
         Task t1 = new Task("Task 1", "Desc1", Priority.HIGH, LocalDate.now());
         t1.setUser(alice);
         taskService.save(t1);

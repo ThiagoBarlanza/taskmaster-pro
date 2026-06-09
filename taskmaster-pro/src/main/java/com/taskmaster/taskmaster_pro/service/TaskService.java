@@ -16,27 +16,29 @@ public class TaskService {
     }
 
     public Task findById(Long id) {
-        // 1. Verificar cache
+        // 1. Check cache
         Task cached = cacheService.get(id);
         if (cached != null) {
             System.out.println("Cache HIT for id " + id);
             return cached;
         }
 
-        // 2. Cache miss – buscar no repositório
+        // 2. Cache miss – fetch from repository
         System.out.println("Cache MISS for id " + id + " – fetching from DB");
         Task task = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found with id " + id));
 
-        // 3. Armazenar no cache para próximas consultas
+        // 3. Store in cache for future requests
         cacheService.put(id, task);
         return task;
     }
 
     public Task save(Task task) {
         Task saved = repository.save(task);
-        // Opcional: invalidar cache ou atualizar
+
+        // Optional: invalidate or update cache
         cacheService.put(saved.getId(), saved);
+
         return saved;
     }
 
@@ -45,7 +47,7 @@ public class TaskService {
         cacheService.evict(id);
     }
 
-    // Outros métodos (listAll, etc.) podem ser delegados diretamente ao repositório
+    // Other read operations can be delegated directly to the repository
     public Iterable<Task> findAll() {
         return repository.findAll();
     }
