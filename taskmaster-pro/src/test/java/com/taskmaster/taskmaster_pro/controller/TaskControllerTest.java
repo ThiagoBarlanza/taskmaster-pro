@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taskmaster.taskmaster_pro.model.Priority;
 import com.taskmaster.taskmaster_pro.model.Task;
 import com.taskmaster.taskmaster_pro.repository.TaskRepository;
+import com.taskmaster.taskmaster_pro.repository.UserRepository;
 import com.taskmaster.taskmaster_pro.service.CsvImportService;
 import com.taskmaster.taskmaster_pro.service.JsonImportService;
 import com.taskmaster.taskmaster_pro.service.TaskService;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -45,7 +47,10 @@ class TaskControllerTest {
     private JsonImportService jsonImportService;
 
     @MockitoBean
-    private TaskRepository taskRepository;   // ← ADD THIS
+    private TaskRepository taskRepository;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -185,5 +190,12 @@ class TaskControllerTest {
 
         mockMvc.perform(multipart("/tasks/import/json").file(file))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void setupDemo_ReturnsSuccessMessage() throws Exception {
+        mockMvc.perform(post("/tasks/setup-demo"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Demo data created")));
     }
 }
