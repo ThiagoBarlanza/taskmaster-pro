@@ -78,6 +78,9 @@ http://localhost:8080
 
 ## 📚 API Endpoints
 
+> **Windows PowerShell users:** replace `curl` with `curl.exe` in all examples.  
+> **Unix/Linux/macOS users:** use `curl` as shown.
+
 ### List All Tasks
 
 ```http
@@ -410,55 +413,6 @@ Benefits:
 * Higher flexibility
 
 Each service has a single responsibility.
-
----
-
-## 🎯 Interview Feedback Mapping
-
-| Feedback Received                        | Solution Implemented                 |
-| ---------------------------------------- | ------------------------------------ |
-| Difficulty processing large text files   | Streaming CSV and JSON imports       |
-| Limited discussion of performance        | Complexity analysis included         |
-| Weak explanation of storage design       | Manual cache implementation          |
-| Composition only understood conceptually | Entire architecture uses composition |
-| Difficulty explaining GET vs POST        | Clear REST endpoint examples         |
-| SQL JOIN knowledge                       | Live JOIN demonstration endpoint     |
-
----
-
-## 📹 Suggested Demo Video Structure
-
-### 1. Project Overview (30s)
-
-* Explain the purpose of the API
-* Show application startup
-
-### 2. File Import (1 min)
-
-* Upload CSV file
-* Upload JSON file
-* Explain streaming processing
-
-### 3. Sorting & Complexity (1 min)
-
-* Demonstrate priority sorting
-* Explain O(n log n)
-
-### 4. Cache Demonstration (1 min)
-
-* Request same task twice
-* Show cache hit and miss
-
-### 5. SQL JOIN Demo (1 min)
-
-* Create demo data
-* Execute JOIN endpoint
-* Explain INNER vs LEFT JOIN
-
-### 6. Conclusion (30s)
-
-* Summarize lessons learned
-* Connect project to interview feedback
 
 ---
 
