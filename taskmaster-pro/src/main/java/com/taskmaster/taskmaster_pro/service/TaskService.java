@@ -1,5 +1,6 @@
 package com.taskmaster.taskmaster_pro.service;
 
+import com.taskmaster.taskmaster_pro.exception.TaskNotFoundException;
 import com.taskmaster.taskmaster_pro.model.Task;
 import com.taskmaster.taskmaster_pro.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,7 @@ public class TaskService {
         // 2. Cache miss – fetch from repository
         System.out.println("Cache MISS for id " + id + " – fetching from DB");
         Task task = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id " + id));
-
+                .orElseThrow(() -> new TaskNotFoundException(id));
         // 3. Store in cache for future requests
         cacheService.put(id, task);
         return task;
@@ -51,4 +51,5 @@ public class TaskService {
     public Iterable<Task> findAll() {
         return repository.findAll();
     }
+
 }

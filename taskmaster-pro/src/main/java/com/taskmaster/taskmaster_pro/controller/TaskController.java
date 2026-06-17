@@ -13,6 +13,7 @@ import com.taskmaster.taskmaster_pro.service.JsonImportService;
 import com.taskmaster.taskmaster_pro.service.TaskService;
 import com.taskmaster.taskmaster_pro.service.TaskSorter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,8 +76,17 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task findById(@PathVariable Long id) {
-        return taskService.findById(id);
+    public TaskDto findById(@PathVariable Long id) {
+        Task task = taskService.findById(id);
+        return new TaskDto(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getPriority(),
+                task.getDeadline(),
+                task.getUser() != null ? task.getUser().getId() : null,
+                task.getUser() != null ? task.getUser().getName() : null
+        );
     }
 
     @GetMapping("/sorted")
@@ -133,11 +143,11 @@ public class TaskController {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleRuntimeException(RuntimeException ex) {
-        return ex.getMessage();
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public String handleRuntimeException(RuntimeException ex) {
+//        return ex.getMessage();
+//    }
 
     @PostMapping("/setup-demo")
     public String setupDemo() {
@@ -159,5 +169,10 @@ public class TaskController {
         taskService.save(t3);
 
         return "Demo data created. Users: Alice, Bob. Tasks: 3 (2 with users, 1 without).";
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        taskService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
