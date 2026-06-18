@@ -137,18 +137,6 @@ public class TaskController {
         }
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidCriteria(IllegalArgumentException ex) {
-        return ex.getMessage();
-    }
-
-//    @ExceptionHandler(RuntimeException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public String handleRuntimeException(RuntimeException ex) {
-//        return ex.getMessage();
-//    }
-
     @PostMapping("/setup-demo")
     public String setupDemo() {
         // Create users
