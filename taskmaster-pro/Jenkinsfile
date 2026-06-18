@@ -1,0 +1,100 @@
+pipeline {
+    agent any
+
+    environment {
+        // SonarQube server URL (adjust if running on different host/port)
+        SONAR_HOST = 'http://host.docker.internal:9000'
+        // SonarQube token - replace with your own token (generated in SonarQube UI)
+        SONAR_TOKEN = 'squ_5240fd71d8cded487d015209794e146bc1a1cc12'
+        // Docker image name for publishing
+        DOCKER_IMAGE = 'thiagobarlanza/taskmaster-pro'
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './mvnw clean compile'
+            }
+        }
+
+        stage('Test & Coverage') {
+            steps {
+                sh './mvnw test jacoco:report'
+            }
+            post {
+                always {
+                    // Publish JUnit test results
+                    junit 'target/surefire-reports/*.xml'
+                    // Publish JaCoCo coverage report as HTML
+                    publishHTML([
+                        reportDir: 'target/site/jacoco',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Coverage Report'
+                    ])
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh './mvnw sonar:sonar -Dsonar.host.url=${SONAR_HOST} -Dsonar.login=${SONAR_TOKEN}'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh './mvnw package -DskipTests'
+            }
+        }
+
+        // Optional: Build and push Docker image (requires Docker installed on Jenkins agent)
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', 'docker-hub-credentials') {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:latest").push()
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up workspace after build
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
+        }
+    }
+}
