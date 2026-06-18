@@ -43,7 +43,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sh mvnw sonar:sonar -Dsonar.host.url=${SONAR_HOST} -Dsonar.login=${SONAR_TOKEN}'
+                    sh 'cd taskmaster-pro && sh mvnw sonar:sonar -Dsonar.host.url=${SONAR_HOST} -Dsonar.login=${SONAR_TOKEN}'
                 }
             }
         }
@@ -58,7 +58,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'sh mvnw package -DskipTests'
+                sh 'cd taskmaster-pro && sh mvnw package -DskipTests'
             }
         }
 
