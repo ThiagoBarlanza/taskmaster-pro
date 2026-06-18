@@ -2,8 +2,9 @@
 
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://adoptium.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Maven](https://img.shields.io/badge/Maven-3.9.6-orange.svg)](https://maven.apache.org/)
+[![Maven](https://img.shields.io/badge/Maven-3.9+-blue.svg)](https://maven.apache.org/)
 [![JaCoCo](https://img.shields.io/badge/JaCoCo-0.8.12-red.svg)](https://www.jacoco.org/jacoco/)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)](target/site/jacoco/index.html)
 
 **REST API for high-performance task management** built to demonstrate solid software engineering practices, including efficient file processing, custom sorting, manual caching, unit testing, and SQL joins.
 
@@ -354,6 +355,41 @@ Target coverage:
 ```
 
 ---
+
+---
+
+## 🥒 BDD Testing with Cucumber
+
+This project includes a comprehensive BDD test suite using **Cucumber** and **RestAssured** to validate the REST API end‑to‑end.
+
+### Features
+- Gherkin scenarios for CRUD operations
+- Step definitions with RestAssured for HTTP calls
+- Integration with Spring Boot test context
+- HTML reports generated after test execution
+- 100% passing rate on all scenarios
+
+### Running BDD Tests
+
+```bash
+./mvnw clean test -Dtest=CucumberTestRunner
+```
+
+Reports are generated at:
+
+```text
+target/cucumber-reports/cucumber.html
+```
+
+### Example Scenario
+
+```gherkin
+Scenario: Successfully create a new task
+  Given I have a task payload with title "Implement Cucumber", priority "HIGH", deadline "2026-06-30"
+  When I send a POST request to "/tasks"
+  Then the response status should be 201
+  And the response should contain the task title "Implement Cucumber"
+```
 
 ## 🔗 SQL JOIN Demonstration
 
