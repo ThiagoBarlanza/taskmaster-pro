@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   jenkins:
-    image: jenkins/blueocean:latest
+    image: jenkins/blueocean:lts
     container_name: jenkins
     ports:
       - "8080:8080"
