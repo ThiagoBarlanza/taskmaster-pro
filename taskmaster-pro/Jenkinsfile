@@ -1,20 +1,15 @@
 pipeline {
-
     agent any
 
     environment {
-        SONAR_HOST = 'http://sonarqube:9000'
-        SONAR_TOKEN = 'squ_XXXX'
+        SONAR_TOKEN = credentials('sonar-token')
         DOCKER_IMAGE = 'thiagobarlanza/taskmaster-pro'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
-
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
+            steps { checkout scm }
         }
 
         stage('Build') {
@@ -42,7 +37,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     dir('taskmaster-pro') {
-                        sh './mvnw sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+                        sh './mvnw sonar:sonar'
                     }
                 }
             }
