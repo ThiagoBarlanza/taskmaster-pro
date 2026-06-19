@@ -32,6 +32,9 @@ pipeline {
                 always {
                     junit 'taskmaster-pro/target/surefire-reports/*.xml'
                     publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false,
                         reportDir: 'taskmaster-pro/target/site/jacoco',
                         reportFiles: 'index.html',
                         reportName: 'JaCoCo Coverage Report'
