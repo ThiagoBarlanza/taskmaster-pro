@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: jenkins/blueocean:lts
+    image: jenkinsci/blueocean:lts
     container_name: jenkins
     ports:
       - "8080:8080"
