@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        SONAR_HOST = 'http://host.docker.internal:9000'
+        SONAR_HOST = 'http://sonarqube:9000'
         SONAR_TOKEN = 'squ_XXXX'
         DOCKER_IMAGE = 'thiagobarlanza/taskmaster-pro'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
@@ -42,11 +42,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     dir('taskmaster-pro') {
-                        sh """
-                            ./mvnw sonar:sonar \
-                            -Dsonar.host.url=$SONAR_HOST \
-                            -Dsonar.login=$SONAR_TOKEN
-                        """
+                        sh './mvnw sonar:sonar -Dsonar.login=$SONAR_TOKEN'
                     }
                 }
             }
