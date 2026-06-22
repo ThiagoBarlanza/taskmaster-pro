@@ -156,7 +156,7 @@ public class TaskController {
         Task t3 = new Task("Task 3", "No user", Priority.LOW, null);
         taskService.save(t3);
 
-        return "Demo data created. Users: Alice, Juca. Tasks: 3 (2 with users, 1 without).";
+        return "Demo data created. Users: Alice, John. Tasks: 3 (2 with users, 1 without).";
     }
 
     @DeleteMapping("/{id}")
