@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/tasks")
 public class TaskController {
 
+    private static final Random RANDOM = new Random();
+
     private final TaskService taskService;
     private final TaskSorter taskSorter;
     private final CsvImportService csvImportService;
@@ -44,7 +46,6 @@ public class TaskController {
         this.taskRepository = taskRepository;
     }
 
-    // Endpoint that shows the difference between INNER JOIN and LEFT JOIN
     @GetMapping("/join-demo")
     public List<TaskDto> demonstrateJoins() {
         List<Task> tasks = taskRepository.findAllTasksWithUserLeftJoin();
@@ -102,14 +103,13 @@ public class TaskController {
 
     @PostMapping("/generate")
     public String generateRandomTasks(@RequestParam(defaultValue = "100") int count) {
-        Random random = new Random();
         Priority[] priorities = Priority.values();
         for (int i = 1; i <= count; i++) {
             Task task = new Task();
             task.setTitle("Auto Task " + i);
             task.setDescription("Randomly generated for testing");
-            task.setPriority(priorities[random.nextInt(priorities.length)]);
-            long days = (long)random.nextInt(396) - 30;
+            task.setPriority(priorities[RANDOM.nextInt(priorities.length)]);
+            long days = (long) RANDOM.nextInt(396) - 30;
             task.setDeadline(LocalDate.now().plusDays(days));
             task.setCreatedAt(LocalDateTime.now());
             taskService.save(task);
@@ -158,6 +158,7 @@ public class TaskController {
 
         return "Demo data created. Users: Alice, Bob. Tasks: 3 (2 with users, 1 without).";
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteById(id);
