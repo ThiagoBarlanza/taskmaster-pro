@@ -109,7 +109,7 @@ public class TaskController {
             task.setTitle("Auto Task " + i);
             task.setDescription("Randomly generated for testing");
             task.setPriority(priorities[random.nextInt(priorities.length)]);
-            long days = random.nextInt(396) - 30; // -30 to 365 days
+            long days = (long)random.nextInt(396) - 30;
             task.setDeadline(LocalDate.now().plusDays(days));
             task.setCreatedAt(LocalDateTime.now());
             taskService.save(task);
